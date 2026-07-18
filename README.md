@@ -243,7 +243,7 @@ interview-ai-yt/
 ### Step 1: Clone the Repository
 ```bash
 git clone <repository-url>
-cd interview-ai-yt
+cd Job Preparation Platform
 ```
 
 ### Step 2: Backend Setup
