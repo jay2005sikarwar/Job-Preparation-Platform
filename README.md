@@ -280,14 +280,14 @@ Create a `.env` file in the `Backend` directory:
 
 ```env
 # MongoDB Connection
-MONGO_URI=mongodb://127.0.0.1:27017/interview-ai
+MONGO_URI=mongodb///////
 # For MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/database-name
 
 # Google Generative AI
 GOOGLE_GENAI_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 # JWT Secret (Generate a strong random string)
-JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345
+JWT_SECRET=-----------------------------------
 ```
 
 ### Frontend Configuration
