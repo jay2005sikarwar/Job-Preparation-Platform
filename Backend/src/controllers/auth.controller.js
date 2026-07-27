@@ -1,147 +1,315 @@
+// // // // const userModel = require("../models/user.model")
+// // // // const bcrypt = require("bcryptjs")
+// // // // const jwt = require("jsonwebtoken")
+// // // // const tokenBlacklistModel = require("../models/blacklist.model")
+
+// // // // /**
+// // // //  * @name registerUserController
+// // // //  * @description register a new user, expects username, email and password in the request body
+// // // //  * @access Public
+// // // //  */
+// // // // async function registerUserController(req, res) {
+
+// // // //     const { username, email, password } = req.body
+
+// // // //     if (!username || !email || !password) {
+// // // //         return res.status(400).json({
+// // // //             message: "Please provide username, email and password"
+// // // //         })
+// // // //     }
+
+// // // //     const isUserAlreadyExists = await userModel.findOne({
+// // // //         $or: [ { username }, { email } ]
+// // // //     })
+
+// // // //     if (isUserAlreadyExists) {
+// // // //         return res.status(400).json({
+// // // //             message: "Account already exists with this email address or username"
+// // // //         })
+// // // //     }
+
+// // // //     const hash = await bcrypt.hash(password, 10)
+
+// // // //     const user = await userModel.create({
+// // // //         username,
+// // // //         email,
+// // // //         password: hash
+// // // //     })
+
+// // // //     const token = jwt.sign(
+// // // //         { id: user._id, username: user.username },
+// // // //         process.env.JWT_SECRET,
+// // // //         { expiresIn: "1d" }
+// // // //     )
+
+// // // //     res.cookie("token", token)
+
+
+// // // //     res.status(201).json({
+// // // //         message: "User registered successfully",
+// // // //         user: {
+// // // //             id: user._id,
+// // // //             username: user.username,
+// // // //             email: user.email
+// // // //         }
+// // // //     })
+
+// // // // }
+
+
+// // // // /**
+// // // //  * @name loginUserController
+// // // //  * @description login a user, expects email and password in the request body
+// // // //  * @access Public
+// // // //  */
+// // // // async function loginUserController(req, res) {
+
+// // // //     const { email, password } = req.body
+
+// // // //     const user = await userModel.findOne({ email })
+
+// // // //     if (!user) {
+// // // //         return res.status(400).json({
+// // // //             message: "Invalid email or password"
+// // // //         })
+// // // //     }
+
+// // // //     const isPasswordValid = await bcrypt.compare(password, user.password)
+
+// // // //     if (!isPasswordValid) {
+// // // //         return res.status(400).json({
+// // // //             message: "Invalid email or password"
+// // // //         })
+// // // //     }
+
+// // // //     const token = jwt.sign(
+// // // //         { id: user._id, username: user.username },
+// // // //         process.env.JWT_SECRET,
+// // // //         { expiresIn: "1d" }
+// // // //     )
+
+// // // //     res.cookie("token", token)
+// // // //     res.status(200).json({
+// // // //         message: "User loggedIn successfully.",
+// // // //         user: {
+// // // //             id: user._id,
+// // // //             username: user.username,
+// // // //             email: user.email
+// // // //         }
+// // // //     })
+// // // // }
+
+
+// // // // /**
+// // // //  * @name logoutUserController
+// // // //  * @description clear token from user cookie and add the token in blacklist
+// // // //  * @access public
+// // // //  */
+// // // // async function logoutUserController(req, res) {
+// // // //     const token = req.cookies.token
+
+// // // //     if (token) {
+// // // //         await tokenBlacklistModel.create({ token })
+// // // //     }
+
+// // // //     res.clearCookie("token")
+
+// // // //     res.status(200).json({
+// // // //         message: "User logged out successfully"
+// // // //     })
+// // // // }
+
+// // // // /**
+// // // //  * @name getMeController
+// // // //  * @description get the current logged in user details.
+// // // //  * @access private
+// // // //  */
+// // // // async function getMeController(req, res) {
+
+// // // //     const user = await userModel.findById(req.user.id)
+
+
+
+// // // //     res.status(200).json({
+// // // //         message: "User details fetched successfully",
+// // // //         user: {
+// // // //             id: user._id,
+// // // //             username: user.username,
+// // // //             email: user.email
+// // // //         }
+// // // //     })
+
+// // // // }
+
+
+
+// // // // module.exports = {
+// // // //     registerUserController,
+// // // //     loginUserController,
+// // // //     logoutUserController,
+// // // //     getMeController
+// // // // }
 // // // const userModel = require("../models/user.model")
 // // // const bcrypt = require("bcryptjs")
 // // // const jwt = require("jsonwebtoken")
 // // // const tokenBlacklistModel = require("../models/blacklist.model")
 
+// // // // Helper function for cookie options
+// // // const getCookieOptions = () => {
+// // //     const isProduction = process.env.NODE_ENV === "production";
+// // //     return {
+// // //         httpOnly: true,
+// // //         secure: isProduction,                     // Required for HTTPS on Render
+// // //         sameSite: isProduction ? "none" : "lax",  // Required for cross-site cookies
+// // //         maxAge: 24 * 60 * 60 * 1000               // 1 day
+// // //     };
+// // // };
+
 // // // /**
 // // //  * @name registerUserController
-// // //  * @description register a new user, expects username, email and password in the request body
-// // //  * @access Public
 // // //  */
 // // // async function registerUserController(req, res) {
+// // //     try {
+// // //         const { username, email, password } = req.body
 
-// // //     const { username, email, password } = req.body
-
-// // //     if (!username || !email || !password) {
-// // //         return res.status(400).json({
-// // //             message: "Please provide username, email and password"
-// // //         })
-// // //     }
-
-// // //     const isUserAlreadyExists = await userModel.findOne({
-// // //         $or: [ { username }, { email } ]
-// // //     })
-
-// // //     if (isUserAlreadyExists) {
-// // //         return res.status(400).json({
-// // //             message: "Account already exists with this email address or username"
-// // //         })
-// // //     }
-
-// // //     const hash = await bcrypt.hash(password, 10)
-
-// // //     const user = await userModel.create({
-// // //         username,
-// // //         email,
-// // //         password: hash
-// // //     })
-
-// // //     const token = jwt.sign(
-// // //         { id: user._id, username: user.username },
-// // //         process.env.JWT_SECRET,
-// // //         { expiresIn: "1d" }
-// // //     )
-
-// // //     res.cookie("token", token)
-
-
-// // //     res.status(201).json({
-// // //         message: "User registered successfully",
-// // //         user: {
-// // //             id: user._id,
-// // //             username: user.username,
-// // //             email: user.email
+// // //         if (!username || !email || !password) {
+// // //             return res.status(400).json({
+// // //                 message: "Please provide username, email and password"
+// // //             })
 // // //         }
-// // //     })
 
+// // //         const isUserAlreadyExists = await userModel.findOne({
+// // //             $or: [{ username }, { email }]
+// // //         })
+
+// // //         if (isUserAlreadyExists) {
+// // //             return res.status(400).json({
+// // //                 message: "Account already exists with this email address or username"
+// // //             })
+// // //         }
+
+// // //         const hash = await bcrypt.hash(password, 10)
+
+// // //         const user = await userModel.create({
+// // //             username,
+// // //             email,
+// // //             password: hash
+// // //         })
+
+// // //         const token = jwt.sign(
+// // //             { id: user._id, username: user.username },
+// // //             process.env.JWT_SECRET,
+// // //             { expiresIn: "1d" }
+// // //         )
+
+// // //         res.cookie("token", token, getCookieOptions())
+
+// // //         res.status(201).json({
+// // //             message: "User registered successfully",
+// // //             user: {
+// // //                 id: user._id,
+// // //                 username: user.username,
+// // //                 email: user.email
+// // //             }
+// // //         })
+// // //     } catch (err) {
+// // //         console.error("Register Controller Error:", err)
+// // //         res.status(500).json({ message: "Internal server error" })
+// // //     }
 // // // }
-
 
 // // // /**
 // // //  * @name loginUserController
-// // //  * @description login a user, expects email and password in the request body
-// // //  * @access Public
 // // //  */
 // // // async function loginUserController(req, res) {
+// // //     try {
+// // //         const { email, password } = req.body
 
-// // //     const { email, password } = req.body
-
-// // //     const user = await userModel.findOne({ email })
-
-// // //     if (!user) {
-// // //         return res.status(400).json({
-// // //             message: "Invalid email or password"
-// // //         })
-// // //     }
-
-// // //     const isPasswordValid = await bcrypt.compare(password, user.password)
-
-// // //     if (!isPasswordValid) {
-// // //         return res.status(400).json({
-// // //             message: "Invalid email or password"
-// // //         })
-// // //     }
-
-// // //     const token = jwt.sign(
-// // //         { id: user._id, username: user.username },
-// // //         process.env.JWT_SECRET,
-// // //         { expiresIn: "1d" }
-// // //     )
-
-// // //     res.cookie("token", token)
-// // //     res.status(200).json({
-// // //         message: "User loggedIn successfully.",
-// // //         user: {
-// // //             id: user._id,
-// // //             username: user.username,
-// // //             email: user.email
+// // //         if (!email || !password) {
+// // //             return res.status(400).json({ message: "Please provide email and password" })
 // // //         }
-// // //     })
-// // // }
 
+// // //         const user = await userModel.findOne({ email })
+
+// // //         if (!user) {
+// // //             return res.status(400).json({ message: "Invalid email or password" })
+// // //         }
+
+// // //         const isPasswordValid = await bcrypt.compare(password, user.password)
+
+// // //         if (!isPasswordValid) {
+// // //             return res.status(400).json({ message: "Invalid email or password" })
+// // //         }
+
+// // //         const token = jwt.sign(
+// // //             { id: user._id, username: user.username },
+// // //             process.env.JWT_SECRET,
+// // //             { expiresIn: "1d" }
+// // //         )
+
+// // //         res.cookie("token", token, getCookieOptions())
+
+// // //         res.status(200).json({
+// // //             message: "User logged in successfully.",
+// // //             user: {
+// // //                 id: user._id,
+// // //                 username: user.username,
+// // //                 email: user.email
+// // //             }
+// // //         })
+// // //     } catch (err) {
+// // //         console.error("Login Controller Error:", err)
+// // //         res.status(500).json({ message: "Internal server error" })
+// // //     }
+// // // }
 
 // // // /**
 // // //  * @name logoutUserController
-// // //  * @description clear token from user cookie and add the token in blacklist
-// // //  * @access public
 // // //  */
 // // // async function logoutUserController(req, res) {
-// // //     const token = req.cookies.token
+// // //     try {
+// // //         const token = req.cookies.token
 
-// // //     if (token) {
-// // //         await tokenBlacklistModel.create({ token })
+// // //         if (token) {
+// // //             await tokenBlacklistModel.create({ token })
+// // //         }
+
+// // //         // Clear cookie with exact matching options
+// // //         res.clearCookie("token", getCookieOptions())
+
+// // //         res.status(200).json({
+// // //             message: "User logged out successfully"
+// // //         })
+// // //     } catch (err) {
+// // //         console.error("Logout Controller Error:", err)
+// // //         res.status(500).json({ message: "Internal server error" })
 // // //     }
-
-// // //     res.clearCookie("token")
-
-// // //     res.status(200).json({
-// // //         message: "User logged out successfully"
-// // //     })
 // // // }
 
 // // // /**
 // // //  * @name getMeController
-// // //  * @description get the current logged in user details.
-// // //  * @access private
 // // //  */
 // // // async function getMeController(req, res) {
+// // //     try {
+// // //         const user = await userModel.findById(req.user.id)
 
-// // //     const user = await userModel.findById(req.user.id)
-
-
-
-// // //     res.status(200).json({
-// // //         message: "User details fetched successfully",
-// // //         user: {
-// // //             id: user._id,
-// // //             username: user.username,
-// // //             email: user.email
+// // //         if (!user) {
+// // //             return res.status(404).json({ message: "User not found" })
 // // //         }
-// // //     })
 
+// // //         res.status(200).json({
+// // //             message: "User details fetched successfully",
+// // //             user: {
+// // //                 id: user._id,
+// // //                 username: user.username,
+// // //                 email: user.email
+// // //             }
+// // //         })
+// // //     } catch (err) {
+// // //         console.error("GetMe Controller Error:", err)
+// // //         res.status(500).json({ message: "Internal server error" })
+// // //     }
 // // // }
-
-
 
 // // // module.exports = {
 // // //     registerUserController,
@@ -149,175 +317,133 @@
 // // //     logoutUserController,
 // // //     getMeController
 // // // }
-// // const userModel = require("../models/user.model")
-// // const bcrypt = require("bcryptjs")
-// // const jwt = require("jsonwebtoken")
-// // const tokenBlacklistModel = require("../models/blacklist.model")
 
-// // // Helper function for cookie options
-// // const getCookieOptions = () => {
-// //     const isProduction = process.env.NODE_ENV === "production";
-// //     return {
-// //         httpOnly: true,
-// //         secure: isProduction,                     // Required for HTTPS on Render
-// //         sameSite: isProduction ? "none" : "lax",  // Required for cross-site cookies
-// //         maxAge: 24 * 60 * 60 * 1000               // 1 day
-// //     };
-// // };
+// // const pdfParse = require("pdf-parse")
+// // const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
+// // const interviewReportModel = require("../models/interviewReport.model")
 
 // // /**
-// //  * @name registerUserController
+// //  * @description Controller to generate interview report based on user self description, resume and job description.
 // //  */
-// // async function registerUserController(req, res) {
+// // async function generateInterViewReportController(req, res) {
 // //     try {
-// //         const { username, email, password } = req.body
-
-// //         if (!username || !email || !password) {
-// //             return res.status(400).json({
-// //                 message: "Please provide username, email and password"
-// //             })
+// //         if (!req.file) {
+// //             return res.status(400).json({ message: "Resume file is required." })
 // //         }
 
-// //         const isUserAlreadyExists = await userModel.findOne({
-// //             $or: [{ username }, { email }]
-// //         })
+// //         const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+// //         const { selfDescription, jobDescription } = req.body
 
-// //         if (isUserAlreadyExists) {
-// //             return res.status(400).json({
-// //                 message: "Account already exists with this email address or username"
-// //             })
+// //         if (!jobDescription) {
+// //             return res.status(400).json({ message: "Job description is required." })
 // //         }
 
-// //         const hash = await bcrypt.hash(password, 10)
-
-// //         const user = await userModel.create({
-// //             username,
-// //             email,
-// //             password: hash
+// //         const interViewReportByAi = await generateInterviewReport({
+// //             resume: resumeContent.text,
+// //             selfDescription,
+// //             jobDescription
 // //         })
 
-// //         const token = jwt.sign(
-// //             { id: user._id, username: user.username },
-// //             process.env.JWT_SECRET,
-// //             { expiresIn: "1d" }
-// //         )
-
-// //         res.cookie("token", token, getCookieOptions())
+// //         const interviewReport = await interviewReportModel.create({
+// //             user: req.user.id,
+// //             resume: resumeContent.text,
+// //             selfDescription,
+// //             jobDescription,
+// //             ...interViewReportByAi
+// //         })
 
 // //         res.status(201).json({
-// //             message: "User registered successfully",
-// //             user: {
-// //                 id: user._id,
-// //                 username: user.username,
-// //                 email: user.email
-// //             }
+// //             message: "Interview report generated successfully.",
+// //             interviewReport
 // //         })
 // //     } catch (err) {
-// //         console.error("Register Controller Error:", err)
-// //         res.status(500).json({ message: "Internal server error" })
+// //         console.error("Generate Interview Report Error:", err)
+// //         res.status(500).json({ message: "Failed to generate interview report." })
 // //     }
 // // }
 
 // // /**
-// //  * @name loginUserController
+// //  * @description Controller to get interview report by interviewId.
 // //  */
-// // async function loginUserController(req, res) {
+// // async function getInterviewReportByIdController(req, res) {
 // //     try {
-// //         const { email, password } = req.body
+// //         const { interviewId } = req.params
 
-// //         if (!email || !password) {
-// //             return res.status(400).json({ message: "Please provide email and password" })
+// //         const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+
+// //         if (!interviewReport) {
+// //             return res.status(404).json({
+// //                 message: "Interview report not found."
+// //             })
 // //         }
-
-// //         const user = await userModel.findOne({ email })
-
-// //         if (!user) {
-// //             return res.status(400).json({ message: "Invalid email or password" })
-// //         }
-
-// //         const isPasswordValid = await bcrypt.compare(password, user.password)
-
-// //         if (!isPasswordValid) {
-// //             return res.status(400).json({ message: "Invalid email or password" })
-// //         }
-
-// //         const token = jwt.sign(
-// //             { id: user._id, username: user.username },
-// //             process.env.JWT_SECRET,
-// //             { expiresIn: "1d" }
-// //         )
-
-// //         res.cookie("token", token, getCookieOptions())
 
 // //         res.status(200).json({
-// //             message: "User logged in successfully.",
-// //             user: {
-// //                 id: user._id,
-// //                 username: user.username,
-// //                 email: user.email
-// //             }
+// //             message: "Interview report fetched successfully.",
+// //             interviewReport
 // //         })
 // //     } catch (err) {
-// //         console.error("Login Controller Error:", err)
-// //         res.status(500).json({ message: "Internal server error" })
+// //         console.error("Get Interview Report By ID Error:", err)
+// //         res.status(500).json({ message: "Server error fetching report." })
+// //     }
+// // }
+
+// // /** 
+// //  * @description Controller to get all interview reports of logged in user.
+// //  */
+// // async function getAllInterviewReportsController(req, res) {
+// //     try {
+// //         const interviewReports = await interviewReportModel
+// //             .find({ user: req.user.id })
+// //             .sort({ createdAt: -1 })
+// //             .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
+
+// //         res.status(200).json({
+// //             message: "Interview reports fetched successfully.",
+// //             interviewReports
+// //         })
+// //     } catch (err) {
+// //         console.error("Get All Interview Reports Error:", err)
+// //         res.status(500).json({ message: "Server error fetching reports." })
 // //     }
 // // }
 
 // // /**
-// //  * @name logoutUserController
+// //  * @description Controller to generate resume PDF based on user self description, resume and job description.
 // //  */
-// // async function logoutUserController(req, res) {
+// // async function generateResumePdfController(req, res) {
 // //     try {
-// //         const token = req.cookies.token
+// //         const { interviewReportId } = req.params
 
-// //         if (token) {
-// //             await tokenBlacklistModel.create({ token })
+// //         const interviewReport = await interviewReportModel.findById(interviewReportId)
+
+// //         if (!interviewReport) {
+// //             return res.status(404).json({
+// //                 message: "Interview report not found."
+// //             })
 // //         }
 
-// //         // Clear cookie with exact matching options
-// //         res.clearCookie("token", getCookieOptions())
+// //         const { resume, jobDescription, selfDescription } = interviewReport
 
-// //         res.status(200).json({
-// //             message: "User logged out successfully"
+// //         const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription })
+
+// //         res.set({
+// //             "Content-Type": "application/pdf",
+// //             "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
 // //         })
+
+// //         res.send(pdfBuffer)
 // //     } catch (err) {
-// //         console.error("Logout Controller Error:", err)
-// //         res.status(500).json({ message: "Internal server error" })
-// //     }
-// // }
-
-// // /**
-// //  * @name getMeController
-// //  */
-// // async function getMeController(req, res) {
-// //     try {
-// //         const user = await userModel.findById(req.user.id)
-
-// //         if (!user) {
-// //             return res.status(404).json({ message: "User not found" })
-// //         }
-
-// //         res.status(200).json({
-// //             message: "User details fetched successfully",
-// //             user: {
-// //                 id: user._id,
-// //                 username: user.username,
-// //                 email: user.email
-// //             }
-// //         })
-// //     } catch (err) {
-// //         console.error("GetMe Controller Error:", err)
-// //         res.status(500).json({ message: "Internal server error" })
+// //         console.error("Generate Resume PDF Error:", err)
+// //         res.status(500).json({ message: "Failed to generate PDF." })
 // //     }
 // // }
 
 // // module.exports = {
-// //     registerUserController,
-// //     loginUserController,
-// //     logoutUserController,
-// //     getMeController
+// //     generateInterViewReportController,
+// //     getInterviewReportByIdController,
+// //     getAllInterviewReportsController,
+// //     generateResumePdfController
 // // }
-
 // const pdfParse = require("pdf-parse")
 // const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 // const interviewReportModel = require("../models/interviewReport.model")
@@ -331,7 +457,10 @@
 //             return res.status(400).json({ message: "Resume file is required." })
 //         }
 
-//         const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+//         // Standard pdf-parse usage
+//         const pdfData = await pdfParse(req.file.buffer)
+//         const resumeText = pdfData.text
+
 //         const { selfDescription, jobDescription } = req.body
 
 //         if (!jobDescription) {
@@ -339,14 +468,14 @@
 //         }
 
 //         const interViewReportByAi = await generateInterviewReport({
-//             resume: resumeContent.text,
+//             resume: resumeText,
 //             selfDescription,
 //             jobDescription
 //         })
 
 //         const interviewReport = await interviewReportModel.create({
 //             user: req.user.id,
-//             resume: resumeContent.text,
+//             resume: resumeText,
 //             selfDescription,
 //             jobDescription,
 //             ...interViewReportByAi
@@ -414,7 +543,11 @@
 //     try {
 //         const { interviewReportId } = req.params
 
-//         const interviewReport = await interviewReportModel.findById(interviewReportId)
+//         // Restricted query to ensure users only access their own reports
+//         const interviewReport = await interviewReportModel.findOne({
+//             _id: interviewReportId,
+//             user: req.user.id
+//         })
 
 //         if (!interviewReport) {
 //             return res.status(404).json({
@@ -444,136 +577,139 @@
 //     getAllInterviewReportsController,
 //     generateResumePdfController
 // }
-const pdfParse = require("pdf-parse")
-const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
-const interviewReportModel = require("../models/interviewReport.model")
+const userModel = require("../models/user.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const tokenBlacklistModel = require("../models/blacklist.model");
 
-/**
- * @description Controller to generate interview report based on user self description, resume and job description.
- */
-async function generateInterViewReportController(req, res) {
+// Cookie settings for Cross-Site production environments (Render)
+const getCookieOptions = () => {
+    const isProduction = process.env.NODE_ENV === "production";
+    return {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    };
+};
+
+async function registerUserController(req, res) {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: "Resume file is required." })
+        const { username, email, password } = req.body;
+
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "Please provide username, email and password" });
         }
 
-        // Standard pdf-parse usage
-        const pdfData = await pdfParse(req.file.buffer)
-        const resumeText = pdfData.text
+        const isUserAlreadyExists = await userModel.findOne({
+            $or: [{ username }, { email }]
+        });
 
-        const { selfDescription, jobDescription } = req.body
-
-        if (!jobDescription) {
-            return res.status(400).json({ message: "Job description is required." })
+        if (isUserAlreadyExists) {
+            return res.status(400).json({ message: "Account already exists with this email or username" });
         }
 
-        const interViewReportByAi = await generateInterviewReport({
-            resume: resumeText,
-            selfDescription,
-            jobDescription
-        })
+        const hash = await bcrypt.hash(password, 10);
+        const user = await userModel.create({
+            username,
+            email,
+            password: hash
+        });
 
-        const interviewReport = await interviewReportModel.create({
-            user: req.user.id,
-            resume: resumeText,
-            selfDescription,
-            jobDescription,
-            ...interViewReportByAi
-        })
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.cookie("token", token, getCookieOptions());
 
         res.status(201).json({
-            message: "Interview report generated successfully.",
-            interviewReport
-        })
+            message: "User registered successfully",
+            token, // Returning token as backup option
+            user: { id: user._id, username: user.username, email: user.email }
+        });
     } catch (err) {
-        console.error("Generate Interview Report Error:", err)
-        res.status(500).json({ message: "Failed to generate interview report." })
+        console.error("Register Controller Error:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 
-/**
- * @description Controller to get interview report by interviewId.
- */
-async function getInterviewReportByIdController(req, res) {
+async function loginUserController(req, res) {
     try {
-        const { interviewId } = req.params
+        const { email, password } = req.body;
 
-        const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+        if (!email || !password) {
+            return res.status(400).json({ message: "Please provide email and password" });
+        }
 
-        if (!interviewReport) {
-            return res.status(404).json({
-                message: "Interview report not found."
-            })
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.cookie("token", token, getCookieOptions());
+
+        res.status(200).json({
+            message: "User logged in successfully.",
+            token, // Returning token as backup option
+            user: { id: user._id, username: user.username, email: user.email }
+        });
+    } catch (err) {
+        console.error("Login Controller Error:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function logoutUserController(req, res) {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+        if (token) {
+            await tokenBlacklistModel.create({ token });
+        }
+
+        res.clearCookie("token", getCookieOptions());
+
+        res.status(200).json({ message: "User logged out successfully" });
+    } catch (err) {
+        console.error("Logout Controller Error:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function getMeController(req, res) {
+    try {
+        const user = await userModel.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
         res.status(200).json({
-            message: "Interview report fetched successfully.",
-            interviewReport
-        })
+            message: "User details fetched successfully",
+            user: { id: user._id, username: user.username, email: user.email }
+        });
     } catch (err) {
-        console.error("Get Interview Report By ID Error:", err)
-        res.status(500).json({ message: "Server error fetching report." })
-    }
-}
-
-/** 
- * @description Controller to get all interview reports of logged in user.
- */
-async function getAllInterviewReportsController(req, res) {
-    try {
-        const interviewReports = await interviewReportModel
-            .find({ user: req.user.id })
-            .sort({ createdAt: -1 })
-            .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
-
-        res.status(200).json({
-            message: "Interview reports fetched successfully.",
-            interviewReports
-        })
-    } catch (err) {
-        console.error("Get All Interview Reports Error:", err)
-        res.status(500).json({ message: "Server error fetching reports." })
-    }
-}
-
-/**
- * @description Controller to generate resume PDF based on user self description, resume and job description.
- */
-async function generateResumePdfController(req, res) {
-    try {
-        const { interviewReportId } = req.params
-
-        // Restricted query to ensure users only access their own reports
-        const interviewReport = await interviewReportModel.findOne({
-            _id: interviewReportId,
-            user: req.user.id
-        })
-
-        if (!interviewReport) {
-            return res.status(404).json({
-                message: "Interview report not found."
-            })
-        }
-
-        const { resume, jobDescription, selfDescription } = interviewReport
-
-        const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription })
-
-        res.set({
-            "Content-Type": "application/pdf",
-            "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
-        })
-
-        res.send(pdfBuffer)
-    } catch (err) {
-        console.error("Generate Resume PDF Error:", err)
-        res.status(500).json({ message: "Failed to generate PDF." })
+        console.error("GetMe Controller Error:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 
 module.exports = {
-    generateInterViewReportController,
-    getInterviewReportByIdController,
-    getAllInterviewReportsController,
-    generateResumePdfController
-}
+    registerUserController,
+    loginUserController,
+    logoutUserController,
+    getMeController
+};
