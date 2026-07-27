@@ -583,15 +583,23 @@ const jwt = require("jsonwebtoken");
 const tokenBlacklistModel = require("../models/blacklist.model");
 
 // Cookie settings for Cross-Site production environments (Render)
-const getCookieOptions = () => {
-    const isProduction = process.env.NODE_ENV === "production";
-    return {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    };
-};
+// const getCookieOptions = () => {
+//     const isProduction = process.env.NODE_ENV === "production";
+//     return {
+//         httpOnly: true,
+//         secure: isProduction,
+//         sameSite: isProduction ? "none" : "lax",
+//         maxAge: 24 * 60 * 60 * 1000 // 1 day
+//     };
+// }
+// ;
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
 
 async function registerUserController(req, res) {
     try {
