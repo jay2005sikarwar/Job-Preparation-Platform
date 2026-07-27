@@ -69,7 +69,8 @@
 // };
 import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api";
 import { useContext, useEffect } from "react";
-import { InterviewContext } from "../../../style/interview.context";
+// import { InterviewContext } from "../../../style/interview.context";
+import { ... } from "../../interview/services/interview.api.js";
 import { useParams } from "react-router";
 
 export const useInterview = () => {
