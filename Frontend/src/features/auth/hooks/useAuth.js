@@ -311,7 +311,7 @@
 //     return { user, setUser, loading, login, register, logout };
 // };
 import { useContext } from "react";
-import { AuthContext } from "../services/auth.context";
+import { AuthContext } from "../auth.context";
 import { login as loginApi, register as registerApi, logout as logoutApi, getMe as getMeApi } from "../services/auth.api";
 
 export const useAuth = () => {
