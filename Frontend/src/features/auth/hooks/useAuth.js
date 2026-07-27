@@ -260,7 +260,7 @@
 //     return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf };
 // };
 import { useContext } from "react";
-import { AuthContext } from "../services/auth.context"; // Check your context path
+import { AuthContext } from "../services/auth.context.jsx"; // Check your context path
 import { login as loginApi, register as registerApi, logout as logoutApi, getMe as getMeApi } from "../services/auth.api";
 
 export const useAuth = () => {
