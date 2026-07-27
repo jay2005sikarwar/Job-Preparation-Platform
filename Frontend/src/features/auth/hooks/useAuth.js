@@ -310,9 +310,78 @@
 
 //     return { user, setUser, loading, login, register, logout };
 // };
+// import { useContext } from "react";
+// import { AuthContext } from "../auth.context";
+// import { login as loginApi, register as registerApi, logout as logoutApi, getMe as getMeApi } from "../services/auth.api";
+
+// export const useAuth = () => {
+//     const context = useContext(AuthContext);
+
+//     if (!context) {
+//         throw new Error("useAuth must be used within an AuthProvider");
+//     }
+
+//     const { user, setUser, loading, setLoading } = context;
+
+//     const login = async (credentials) => {
+//         setLoading(true);
+//         try {
+//             const data = await loginApi(credentials);
+//             if (data?.user) {
+//                 setUser(data.user);
+//             }
+//             return data;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     const register = async (userData) => {
+//         setLoading(true);
+//         try {
+//             const data = await registerApi(userData);
+//             if (data?.user) {
+//                 setUser(data.user);
+//             }
+//             return data;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     const logout = async () => {
+//         setLoading(true);
+//         try {
+//             await logoutApi();
+//             setUser(null);
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     const getMe = async () => {
+//         setLoading(true);
+//         try {
+//             const data = await getMeApi();
+//             if (data?.user) {
+//                 setUser(data.user);
+//             }
+//             return data;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     return { user, setUser, loading, login, register, logout, getMe };
+// };
 import { useContext } from "react";
 import { AuthContext } from "../auth.context";
-import { login as loginApi, register as registerApi, logout as logoutApi, getMe as getMeApi } from "../services/auth.api";
+import {
+    login as loginApi,
+    register as registerApi,
+    logout as logoutApi,
+    getMe as getMeApi
+} from "../services/auth.api";
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -323,33 +392,37 @@ export const useAuth = () => {
 
     const { user, setUser, loading, setLoading } = context;
 
-    const login = async (credentials) => {
+    const handleLogin = async (credentials) => {
         setLoading(true);
         try {
             const data = await loginApi(credentials);
+
             if (data?.user) {
                 setUser(data.user);
             }
+
             return data;
         } finally {
             setLoading(false);
         }
     };
 
-    const register = async (userData) => {
+    const handleRegister = async (userData) => {
         setLoading(true);
         try {
             const data = await registerApi(userData);
+
             if (data?.user) {
                 setUser(data.user);
             }
+
             return data;
         } finally {
             setLoading(false);
         }
     };
 
-    const logout = async () => {
+    const handleLogout = async () => {
         setLoading(true);
         try {
             await logoutApi();
@@ -359,18 +432,27 @@ export const useAuth = () => {
         }
     };
 
-    const getMe = async () => {
+    const handleGetMe = async () => {
         setLoading(true);
         try {
             const data = await getMeApi();
+
             if (data?.user) {
                 setUser(data.user);
             }
+
             return data;
         } finally {
             setLoading(false);
         }
     };
 
-    return { user, setUser, loading, login, register, logout, getMe };
+    return {
+        user,
+        loading,
+        handleLogin,
+        handleRegister,
+        handleLogout,
+        handleGetMe
+    };
 };

@@ -89,15 +89,26 @@
 //         throw err.response?.data || err;
 //     }
 // }
+// import axios from "axios";
+
+// const API_BASE_URL = import.meta.env.VITE_API_URL || "https://job-preparation-platform-backend.onrender.com";
+
+// const api = axios.create({
+//     baseURL: API_BASE_URL,
+//     withCredentials: true
+// });
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://job-preparation-platform-backend.onrender.com";
+const API_BASE_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://job-preparation-platform-backend.onrender.com";
+
+console.log("API URL:", API_BASE_URL);
 
 const api = axios.create({
     baseURL: API_BASE_URL,
     withCredentials: true
 });
-
 export async function register({ username, email, password }) {
     try {
         const response = await api.post('/api/auth/register', { username, email, password });
